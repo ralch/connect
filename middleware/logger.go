@@ -3,6 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
+	"strings"
 
 	"github.com/bufbuild/connect-go"
 	"github.com/gofrs/uuid"
@@ -11,6 +12,33 @@ import (
 
 // WithLogger set up the logger.
 func WithLogger() *UnaryHandler {
+	handleFn := func(next http.Handler) http.Handler {
+		fn := func(w http.ResponseWriter, r *http.Request) {
+			w = &ResponseWriter{ResponseWriter: w}
+
+			ctx := r.Context()
+
+			logger := stack.FromContext(ctx)
+			// log the start
+			logger = logger.With(stack.Request(r))
+			logger.InfoCtx(ctx, "request received")
+
+			// prepare the context
+			ctx = stack.WithContext(ctx, logger)
+			r = r.WithContext(ctx)
+
+			// execute the handler
+			next.ServeHTTP(w, r)
+
+			// log the end
+			logger = logger.With(stack.ResponseWriter(w))
+			logger.InfoCtx(ctx, "request completed")
+		}
+
+		return http.HandlerFunc(fn)
+	}
+
+
 	interFn := func(next connect.UnaryFunc) connect.UnaryFunc {
 		// prepare the callback
 		fn := func(ctx context.Context, request connect.AnyRequest) (connect.AnyResponse, error) {
@@ -18,7 +46,7 @@ func WithLogger() *UnaryHandler {
 
 			var (
 				id        = uuid.Must(uuid.NewV4()).String()
-				procedure = request.Spec().Procedure
+				procedure = strings.Trim(request.Spec().Procedure, "/")
 			)
 
 			// log the start
@@ -50,32 +78,6 @@ func WithLogger() *UnaryHandler {
 		}
 		// done!
 		return fn
-	}
-
-	handleFn := func(next http.Handler) http.Handler {
-		fn := func(w http.ResponseWriter, r *http.Request) {
-			w = &ResponseWriter{ResponseWriter: w}
-
-			ctx := r.Context()
-
-			logger := stack.FromContext(ctx)
-			// log the start
-			logger = logger.With(stack.Request(r))
-			logger.InfoCtx(ctx, "request received")
-
-			// prepare the context
-			ctx = stack.WithContext(ctx, logger)
-			r = r.WithContext(ctx)
-
-			// execute the handler
-			next.ServeHTTP(w, r)
-
-			// log the end
-			logger = logger.With(stack.ResponseWriter(w))
-			logger.InfoCtx(ctx, "request completed")
-		}
-
-		return http.HandlerFunc(fn)
 	}
 
 	return &UnaryHandler{
@@ -110,10 +112,12 @@ func (r *ResponseWriter) WriteHeader(code int) {
 	r.ResponseWriter.WriteHeader(code)
 }
 
+// GetStatusCode returns the StatusCode.
 func (r *ResponseWriter) GetStatusCode() int32 {
 	return r.StatusCode
 }
 
+// GetContentLength returns the ContentLength.
 func (r *ResponseWriter) GetContentLength() int64 {
 	return r.ContentLength
 }
