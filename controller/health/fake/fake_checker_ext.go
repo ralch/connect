@@ -9,6 +9,6 @@ type FakeCheckResponse struct {
 }
 
 type FakeErrorResponse struct {
-  Code string `json:"code"`
-  Message string `json:"message"`
+	Code    string `json:"code"`
+	Message string `json:"message"`
 }
