@@ -3,6 +3,7 @@ module github.com/ralch/connect-go
 go 1.20
 
 require (
+	github.com/bufbuild/connect-go v1.5.2
 	github.com/bufbuild/connect-grpchealth-go v1.0.0
 	github.com/bufbuild/connect-opentelemetry-go v0.1.0
 	github.com/go-chi/chi/v5 v5.0.8
@@ -11,7 +12,6 @@ require (
 )
 
 require (
-	github.com/bufbuild/connect-go v1.5.2 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
