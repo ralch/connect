@@ -6,10 +6,10 @@ import (
 	"sync"
 
 	grpchealth "github.com/bufbuild/connect-grpchealth-go"
-	"github.com/ralch/connect-go/controller/health"
+	"github.com/ralch/connect/service"
 )
 
-type FakeChecker struct {
+type FakeHealthChecker struct {
 	CheckStub        func(context.Context, *grpchealth.CheckRequest) (*grpchealth.CheckResponse, error)
 	checkMutex       sync.RWMutex
 	checkArgsForCall []struct {
@@ -28,7 +28,7 @@ type FakeChecker struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeChecker) Check(arg1 context.Context, arg2 *grpchealth.CheckRequest) (*grpchealth.CheckResponse, error) {
+func (fake *FakeHealthChecker) Check(arg1 context.Context, arg2 *grpchealth.CheckRequest) (*grpchealth.CheckResponse, error) {
 	fake.checkMutex.Lock()
 	ret, specificReturn := fake.checkReturnsOnCall[len(fake.checkArgsForCall)]
 	fake.checkArgsForCall = append(fake.checkArgsForCall, struct {
@@ -48,26 +48,26 @@ func (fake *FakeChecker) Check(arg1 context.Context, arg2 *grpchealth.CheckReque
 	return fakeReturns.result1, fakeReturns.result2
 }
 
-func (fake *FakeChecker) CheckCallCount() int {
+func (fake *FakeHealthChecker) CheckCallCount() int {
 	fake.checkMutex.RLock()
 	defer fake.checkMutex.RUnlock()
 	return len(fake.checkArgsForCall)
 }
 
-func (fake *FakeChecker) CheckCalls(stub func(context.Context, *grpchealth.CheckRequest) (*grpchealth.CheckResponse, error)) {
+func (fake *FakeHealthChecker) CheckCalls(stub func(context.Context, *grpchealth.CheckRequest) (*grpchealth.CheckResponse, error)) {
 	fake.checkMutex.Lock()
 	defer fake.checkMutex.Unlock()
 	fake.CheckStub = stub
 }
 
-func (fake *FakeChecker) CheckArgsForCall(i int) (context.Context, *grpchealth.CheckRequest) {
+func (fake *FakeHealthChecker) CheckArgsForCall(i int) (context.Context, *grpchealth.CheckRequest) {
 	fake.checkMutex.RLock()
 	defer fake.checkMutex.RUnlock()
 	argsForCall := fake.checkArgsForCall[i]
 	return argsForCall.arg1, argsForCall.arg2
 }
 
-func (fake *FakeChecker) CheckReturns(result1 *grpchealth.CheckResponse, result2 error) {
+func (fake *FakeHealthChecker) CheckReturns(result1 *grpchealth.CheckResponse, result2 error) {
 	fake.checkMutex.Lock()
 	defer fake.checkMutex.Unlock()
 	fake.CheckStub = nil
@@ -77,7 +77,7 @@ func (fake *FakeChecker) CheckReturns(result1 *grpchealth.CheckResponse, result2
 	}{result1, result2}
 }
 
-func (fake *FakeChecker) CheckReturnsOnCall(i int, result1 *grpchealth.CheckResponse, result2 error) {
+func (fake *FakeHealthChecker) CheckReturnsOnCall(i int, result1 *grpchealth.CheckResponse, result2 error) {
 	fake.checkMutex.Lock()
 	defer fake.checkMutex.Unlock()
 	fake.CheckStub = nil
@@ -93,7 +93,7 @@ func (fake *FakeChecker) CheckReturnsOnCall(i int, result1 *grpchealth.CheckResp
 	}{result1, result2}
 }
 
-func (fake *FakeChecker) Invocations() map[string][][]interface{} {
+func (fake *FakeHealthChecker) Invocations() map[string][][]interface{} {
 	fake.invocationsMutex.RLock()
 	defer fake.invocationsMutex.RUnlock()
 	fake.checkMutex.RLock()
@@ -105,7 +105,7 @@ func (fake *FakeChecker) Invocations() map[string][][]interface{} {
 	return copiedInvocations
 }
 
-func (fake *FakeChecker) recordInvocation(key string, args []interface{}) {
+func (fake *FakeHealthChecker) recordInvocation(key string, args []interface{}) {
 	fake.invocationsMutex.Lock()
 	defer fake.invocationsMutex.Unlock()
 	if fake.invocations == nil {
@@ -117,4 +117,4 @@ func (fake *FakeChecker) recordInvocation(key string, args []interface{}) {
 	fake.invocations[key] = append(fake.invocations[key], args)
 }
 
-var _ health.Checker = new(FakeChecker)
+var _ service.HealthChecker = new(FakeHealthChecker)

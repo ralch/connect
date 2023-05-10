@@ -1,4 +1,4 @@
-package health_test
+package service_test
 
 import (
 	"bytes"
@@ -9,31 +9,31 @@ import (
 	"net/http/httptest"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/ralch/connect-go/controller/health"
+	"github.com/ralch/connect/service"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	. "github.com/ralch/connect-go/controller/health/fake"
+	. "github.com/ralch/connect/service/fake"
 )
 
-var _ = Describe("ServiceHandler", func() {
+var _ = Describe("HealthHandler", func() {
 	var (
 		router  *chi.Mux
-		checker *FakeChecker
+		checker *FakeHealthChecker
 	)
 
 	BeforeEach(func() {
 		router = chi.NewRouter()
 		Expect(router).NotTo(BeNil())
 
-		output := &health.CheckResponse{
-			Status: health.StatusServing,
+		output := &service.HealthCheckResponse{
+			Status: service.HealthStatusServing,
 		}
 
-		checker = &FakeChecker{}
+		checker = &FakeHealthChecker{}
 		checker.CheckReturns(output, nil)
 
-		handler := health.NewServiceHandler(checker)
+		handler := service.NewHealthHandler(checker)
 		handler.Mount(router)
 	})
 
@@ -46,7 +46,7 @@ var _ = Describe("ServiceHandler", func() {
 		BeforeEach(func() {
 			w = httptest.NewRecorder()
 
-			input := &FakeCheckRequest{
+			input := &FakeHealthCheckRequest{
 				Service: "ralch.v1.FooService",
 			}
 
@@ -62,7 +62,7 @@ var _ = Describe("ServiceHandler", func() {
 			router.ServeHTTP(w, r)
 			Expect(w.Code).To(Equal(200))
 
-			output := &FakeCheckResponse{}
+			output := &FakeHealthCheckResponse{}
 			Expect(json.NewDecoder(w.Body).Decode(output)).To(Succeed())
 			Expect(output.Status).To(Equal(""))
 		})
@@ -76,7 +76,7 @@ var _ = Describe("ServiceHandler", func() {
 				router.ServeHTTP(w, r)
 				Expect(w.Code).To(Equal(500))
 
-				output := &FakeErrorResponse{}
+				output := &FakeHealthErrorResponse{}
 				Expect(json.NewDecoder(w.Body).Decode(output)).To(Succeed())
 				Expect(output.Code).To(Equal("unknown"))
 				Expect(output.Message).To(Equal("oh no"))

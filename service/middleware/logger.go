@@ -12,7 +12,7 @@ import (
 
 // WithLogger set up the logger.
 func WithLogger() *UnaryHandler {
-	handleFn := func(next http.Handler) http.Handler {
+  	handleFn := func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			w = &ResponseWriter{ResponseWriter: w}
 

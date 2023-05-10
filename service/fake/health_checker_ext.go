@@ -1,14 +1,14 @@
 package fake
 
-type FakeCheckRequest struct {
+type FakeHealthCheckRequest struct {
 	Service string `json:"service"`
 }
 
-type FakeCheckResponse struct {
+type FakeHealthCheckResponse struct {
 	Status string `json:"service"`
 }
 
-type FakeErrorResponse struct {
+type FakeHealthErrorResponse struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
 }

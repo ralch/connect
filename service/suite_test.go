@@ -1,4 +1,4 @@
-package health_test
+package service_test
 
 import (
 	"testing"
@@ -9,7 +9,7 @@ import (
 
 //go:generate go run github.com/maxbrunsfeld/counterfeiter/v6 -generate
 
-func TestHealth(t *testing.T) {
+func TestService(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Controller Health Suite")
+	RunSpecs(t, "Service Suite")
 }
