@@ -1,0 +1,39 @@
+---
+version: v1
+
+managed:
+  enabled: true
+  go_package_prefix:
+    default: github.com/ralch/connect/internal/proto
+    except:
+      - buf.build/googleapis/googleapis
+      - buf.build/envoyproxy/protoc-gen-validate
+
+plugins:
+  - plugin: buf.build/protocolbuffers/go
+    out: internal/proto
+    opt:
+      - paths=source_relative
+
+  # FIXME: use a remote plugin
+  - plugin: go-json
+    out: internal/proto
+    opt:
+      - paths=source_relative
+
+  # FIXME: use a remote plugin
+  - name: go-resource
+    out: internal/proto
+    opt:
+      - paths=source_relative
+
+  - plugin: buf.build/bufbuild/connect-go
+    out: internal/proto
+    opt:
+      - paths=source_relative
+
+  - plugin: buf.build/bufbuild/validate-go
+    out: internal/proto
+    opt:
+      - paths=source_relative
+

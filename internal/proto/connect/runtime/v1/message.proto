@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package connect.runtime.v1;
+
+import "google/api/field_behavior.proto";
+import "validate/validate.proto";
+
+// The service that an application uses to consume messages from a subscription via the Push method.
+service MessageService {
+  // PushEvent pushes a given message to connect.runtime.v1.MessageService service.
+  rpc PushMessage(PushMessageRequest) returns (PushMessageResponse);
+}
+
+// PushMessageRequest represents a request for connect.runtime.v1.MessageService.PushMessage method.
+message PushMessageRequest {
+  // The subscription from which messages should be pulled.
+  string subscription = 1 [
+    // field behavior
+    (google.api.field_behavior) = REQUIRED
+  ];
+
+  // The message.
+  Message message = 2 [
+    // field behavior
+    (google.api.field_behavior) = REQUIRED,
+    // field validateion
+    (validate.rules).message.required = true
+  ];
+}
+
+// PushMessageResponse represents a response for connect.runtime.v1.MessageService.PushMessage method.
+message PushMessageResponse {}
+
+// A message data and its attributes.
+message Message {
+  // The message payload. For JSON requests, the value of this field must be
+  // base64-encoded.
+  bytes data = 1 [
+    // field behavior
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // Attributes for this message.
+  map<string, string> attributes = 2 [
+    // field behavior
+    (google.api.field_behavior) = OPTIONAL
+  ];
+
+  // ID of this message assigned by the server at publication time. Guaranteed
+  // to be unique within the topic. This value may be read by a subscriber
+  // that receives a PubsubMessage via a Pull call or a push delivery. It must
+  // not be populated by a publisher in a Publish call.
+  string message_id = 3 [
+    // field behavior
+    (google.api.field_behavior) = REQUIRED
+  ];
+}

@@ -7,42 +7,41 @@ import (
 
 	"github.com/bufbuild/connect-go"
 	"github.com/gofrs/uuid"
-	"github.com/ralch/stack"
+	"github.com/ralch/slogr"
 )
 
 // WithLogger set up the logger.
-func WithLogger() *UnaryHandler {
-  	handleFn := func(next http.Handler) http.Handler {
+func WithLogger() *UnaryInterceptor {
+	handleFn := func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
 			w = &ResponseWriter{ResponseWriter: w}
 
 			ctx := r.Context()
 
-			logger := stack.FromContext(ctx)
+			logger := slogr.FromContext(ctx)
 			// log the start
-			logger = logger.With(stack.Request(r))
+			logger = logger.With(slogr.Request(r))
 			logger.InfoCtx(ctx, "request received")
 
 			// prepare the context
-			ctx = stack.WithContext(ctx, logger)
+			ctx = slogr.WithContext(ctx, logger)
 			r = r.WithContext(ctx)
 
 			// execute the handler
 			next.ServeHTTP(w, r)
 
 			// log the end
-			logger = logger.With(stack.ResponseWriter(w))
+			logger = logger.With(slogr.ResponseWriter(w))
 			logger.InfoCtx(ctx, "request completed")
 		}
 
 		return http.HandlerFunc(fn)
 	}
 
-
 	interFn := func(next connect.UnaryFunc) connect.UnaryFunc {
 		// prepare the callback
 		fn := func(ctx context.Context, request connect.AnyRequest) (connect.AnyResponse, error) {
-			logger := stack.FromContext(ctx)
+			logger := slogr.FromContext(ctx)
 
 			var (
 				id        = uuid.Must(uuid.NewV4()).String()
@@ -51,12 +50,12 @@ func WithLogger() *UnaryHandler {
 
 			// log the start
 			logger.InfoCtx(ctx, "execution started",
-				stack.OperationStart(id, procedure),
+				slogr.OperationStart(id, procedure),
 			)
 
 			// prepare the context
-			ctx = stack.WithContext(ctx, logger.With(
-				stack.OperationContinue(id, procedure),
+			ctx = slogr.WithContext(ctx, logger.With(
+				slogr.OperationContinue(id, procedure),
 			))
 
 			// execute the method
@@ -64,13 +63,13 @@ func WithLogger() *UnaryHandler {
 			if err != nil {
 				// log the end
 				logger.ErrorCtx(ctx, "execution finished",
-					stack.OperationEnd(id, procedure),
-					stack.Error(err),
+					slogr.OperationEnd(id, procedure),
+					slogr.Error(err),
 				)
 			} else {
 				// log the end
 				logger.InfoCtx(ctx, "execution finished",
-					stack.OperationEnd(id, procedure),
+					slogr.OperationEnd(id, procedure),
 				)
 			}
 
@@ -80,7 +79,7 @@ func WithLogger() *UnaryHandler {
 		return fn
 	}
 
-	return &UnaryHandler{
+	return &UnaryInterceptor{
 		UnaryHandler:     UnaryHandlerFunc(handleFn),
 		UnaryInterceptor: UnaryInterceptorFunc(interFn),
 	}

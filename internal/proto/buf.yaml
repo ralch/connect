@@ -1,0 +1,19 @@
+# prettier-ignore
+---
+version: v1
+
+name: buf.build/ralch/connect
+
+deps:
+  - buf.build/googleapis/googleapis:75b4300737fb4efca0831636be94e517
+  - buf.build/envoyproxy/protoc-gen-validate:6607b10f00ed4a3d98f906807131c44a
+
+lint:
+  use:
+    - DEFAULT
+  ignore:
+    - connect/runtime/v1/health.proto
+  except:
+    - RPC_RESPONSE_STANDARD_NAME
+    - RPC_REQUEST_RESPONSE_UNIQUE
+  allow_comment_ignores: true
