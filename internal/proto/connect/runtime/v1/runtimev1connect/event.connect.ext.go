@@ -2,6 +2,7 @@ package runtimev1connect
 
 import (
 	"context"
+	"fmt"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/bufbuild/connect-go"
@@ -18,6 +19,10 @@ type EventServiceClientBroker struct {
 
 // NewEventServiceClientBroker constructs a client broker for the connect.runtime.v1.EventService service.
 func NewEventServiceClientBroker(ctx context.Context, project string, opts ...Option) (EventServiceClient, error) {
+	if project == "" {
+		return nil, fmt.Errorf("connect: event broker requires a project id")
+	}
+
 	// prepare the client
 	client, err := pubsub.NewClient(ctx, project)
 	if err != nil {
@@ -32,6 +37,10 @@ func NewEventServiceClientBroker(ctx context.Context, project string, opts ...Op
 	// apply the options to the broker
 	for _, opt := range opts {
 		opt.Apply(broker)
+	}
+
+	if broker.topic == "" {
+		return nil, fmt.Errorf("connect: event broker requires a topic name")
 	}
 
 	// done!
