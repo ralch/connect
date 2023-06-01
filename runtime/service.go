@@ -35,6 +35,13 @@ var (
 	NewEventServiceClientBroker = runtimev1connect.NewEventServiceClientBroker
 )
 
+var (
+	// ErrMissingTopic is returned by NewEventServiceClientBroker when the topic argument is not provided.
+	ErrMissingTopic = runtimev1connect.ErrMissingTopic
+	// ErrMissingProject is returned by NewEventServiceClientBroker when the project argument is not provided.
+	ErrMissingProject = runtimev1connect.ErrMissingProject
+)
+
 type (
 	// A message data and its attributes.
 	Message = runtimev1.Message

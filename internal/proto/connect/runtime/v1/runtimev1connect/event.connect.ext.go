@@ -11,6 +11,13 @@ import (
 	"golang.org/x/exp/slog"
 )
 
+var (
+	// ErrMissingTopic is returned by NewEventServiceClientBroker when the topic argument is not provided.
+	ErrMissingTopic = fmt.Errorf("no topic")
+	// ErrMissingProject is returned by NewEventServiceClientBroker when the project argument is not provided.
+	ErrMissingProject = fmt.Errorf("no project")
+)
+
 var _ EventServiceClient = &EventServiceClientBroker{}
 
 // EventServiceClientBroker is a client broker for the connect.runtime.v1.EventService service.
@@ -22,7 +29,7 @@ type EventServiceClientBroker struct {
 // NewEventServiceClientBroker constructs a client broker for the connect.runtime.v1.EventService service.
 func NewEventServiceClientBroker(ctx context.Context, project string, opts ...Option) (EventServiceClient, error) {
 	if project == "" {
-		return nil, fmt.Errorf("connect: event broker requires a project id")
+		return nil, ErrMissingProject
 	}
 
 	// prepare the client
@@ -42,7 +49,7 @@ func NewEventServiceClientBroker(ctx context.Context, project string, opts ...Op
 	}
 
 	if broker.topic == "" {
-		return nil, fmt.Errorf("connect: event broker requires a topic name")
+		return nil, ErrMissingTopic
 	}
 
 	// done!
