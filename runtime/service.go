@@ -14,6 +14,8 @@ type (
 	PushEventResponse = runtimev1.PushEventResponse
 	// EventServiceClient is a client for the connect.runtime.v1.EventService service.
 	EventServiceClient = runtimev1connect.EventServiceClient
+	// EventServiceClientDiscard is a client on which all operations succeed without doing anything.
+	EventServiceClientDiscard = runtimev1connect.EventServiceClientBroker
 	// EventServiceHandler is an implementation of the connect.runtime.v1.EventService service.
 	EventServiceHandler = runtimev1connect.EventServiceHandler
 	// EventServiceController represents a controller for connect.runtime.v1.EventServiceHandler handler.

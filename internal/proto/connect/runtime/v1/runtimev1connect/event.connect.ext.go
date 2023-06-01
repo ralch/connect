@@ -7,6 +7,8 @@ import (
 	"cloud.google.com/go/pubsub"
 	"github.com/bufbuild/connect-go"
 	runtimev1 "github.com/ralch/connect/internal/proto/connect/runtime/v1"
+	"github.com/ralch/slogr"
+	"golang.org/x/exp/slog"
 )
 
 var _ EventServiceClient = &EventServiceClientBroker{}
@@ -67,4 +69,23 @@ func (x *EventServiceClientBroker) PushEvent(ctx context.Context, r *connect.Req
 	response := &runtimev1.PushEventResponse{}
 	// done!
 	return connect.NewResponse(response), nil
+}
+
+var _ EventServiceClient = &EventServiceClientDiscard{}
+
+// EventServiceClientDiscard is a client on which all operations succeed without doing anything.
+type EventServiceClientDiscard struct{}
+
+// PushEvent pushes a given event to connect.runtime.v1.EventService service.
+func (*EventServiceClientDiscard) PushEvent(ctx context.Context, r *connect.Request[runtimev1.PushEventRequest]) (*connect.Response[runtimev1.PushEventResponse], error) {
+	// prepare the request
+	request := r.Msg
+
+	logger := slogr.FromContext(ctx)
+	logger.Info("push an event", slog.Any("event", request.Event))
+
+	response := &runtimev1.PushEventResponse{}
+	// done!
+	return connect.NewResponse(response), nil
+
 }
