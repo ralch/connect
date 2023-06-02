@@ -80,8 +80,10 @@ func (x *EventServiceClientBroker) PushEvent(ctx context.Context, r *connect.Req
 	// prepare the logger message
 	logger.Info("push an event", attr)
 
+	topic := x.client.Topic(x.topic)
+	topic.EnableMessageOrdering = true
 	// publish the message
-	if _, err := x.client.Topic(x.topic).Publish(ctx, message).Get(ctx); err != nil {
+	if _, err := topic.Publish(ctx, message).Get(ctx); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
 
