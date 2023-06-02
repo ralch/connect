@@ -4,13 +4,13 @@ go 1.20
 
 require (
 	cloud.google.com/go/pubsub v1.31.0
-	github.com/bufbuild/connect-go v1.7.0
+	github.com/bufbuild/connect-go v1.8.0
 	github.com/bufbuild/connect-grpcreflect-go v1.1.0
 	github.com/bufbuild/connect-opentelemetry-go v0.3.0
 	github.com/envoyproxy/protoc-gen-validate v1.0.1
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/gofrs/uuid v4.4.0+incompatible
-	github.com/ralch/slogr v0.0.0-20230525065158-2ba8ff280988
+	github.com/ralch/slogr v0.0.0-20230602032302-725408ccabdb
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc
