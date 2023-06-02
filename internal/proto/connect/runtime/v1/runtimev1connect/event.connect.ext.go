@@ -68,6 +68,18 @@ func (x *EventServiceClientBroker) PushEvent(ctx context.Context, r *connect.Req
 		OrderingKey: request.GetOrderingKey(),
 	}
 
+	// prepare the logger attr
+	attr := slog.Group("event",
+		slog.String("id", request.Event.Id),
+		slog.String("type", request.Event.GetType()),
+		slog.String("source", request.Event.GetSource()),
+		slog.String("subject", request.Event.GetSubject()),
+	)
+
+	logger := slogr.FromContext(ctx)
+	// prepare the logger message
+	logger.Info("push an event", attr)
+
 	// publish the message
 	if _, err := x.client.Topic(x.topic).Publish(ctx, message).Get(ctx); err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
@@ -87,9 +99,11 @@ type EventServiceClientDiscard struct{}
 func (*EventServiceClientDiscard) PushEvent(ctx context.Context, r *connect.Request[runtimev1.PushEventRequest]) (*connect.Response[runtimev1.PushEventResponse], error) {
 	// prepare the request
 	request := r.Msg
-
+	// prepare the logger attr
+	attr := slog.Any("event", request.Event)
+	// prepare the logger message
 	logger := slogr.FromContext(ctx)
-	logger.Info("push an event", slog.Any("event", request.Event))
+	logger.Info("push an event", attr)
 
 	response := &runtimev1.PushEventResponse{}
 	// done!
