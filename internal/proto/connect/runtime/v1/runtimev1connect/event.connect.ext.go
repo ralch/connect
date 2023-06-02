@@ -100,9 +100,15 @@ func (*EventServiceClientDiscard) PushEvent(ctx context.Context, r *connect.Requ
 	// prepare the request
 	request := r.Msg
 	// prepare the logger attr
-	attr := slog.Any("event", request.Event)
-	// prepare the logger message
+	attr := slog.Group("event",
+		slog.String("id", request.Event.Id),
+		slog.String("type", request.Event.GetType()),
+		slog.String("source", request.Event.GetSource()),
+		slog.String("subject", request.Event.GetSubject()),
+	)
+
 	logger := slogr.FromContext(ctx)
+	// prepare the logger message
 	logger.Info("push an event", attr)
 
 	response := &runtimev1.PushEventResponse{}
