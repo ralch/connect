@@ -96,8 +96,8 @@ github.com/grpc-ecosystem/grpc-gateway v1.16.0/go.mod h1:BDjrQk3hbvj6Nolgz8mAMFb
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_model v0.0.0-20190812154241-14fe0d1b01d4/go.mod h1:xMI15A0UPsDsEKsMN9yxemIoYk6Tm2C1GtYGdfGttqA=
-github.com/ralch/slogr v0.0.0-20230602032302-725408ccabdb h1:kjBapP5hYcYBWR8+mlpFFYywtapM7zNuMJD1/+njAus=
-github.com/ralch/slogr v0.0.0-20230602032302-725408ccabdb/go.mod h1:xVRuWYW3TgbleZ34YwqHdbMmtzaK3Gw2hIhCNOqiLuE=
+github.com/ralch/slogr v0.0.0-20230603105259-c1ec4ce15f56 h1:w/G2iEVJp9vShGxjNCsL4ZoM3g59Gi0ur66PKLiKX+U=
+github.com/ralch/slogr v0.0.0-20230603105259-c1ec4ce15f56/go.mod h1:xVRuWYW3TgbleZ34YwqHdbMmtzaK3Gw2hIhCNOqiLuE=
 github.com/rogpeppe/fastuuid v1.2.0/go.mod h1:jVj6XXZzXRy/MSR5jhDC/2q6DgLz+nrA6LYCDYWNEvQ=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
