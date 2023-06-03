@@ -10,7 +10,7 @@ require (
 	github.com/envoyproxy/protoc-gen-validate v1.0.1
 	github.com/go-chi/chi/v5 v5.0.8
 	github.com/gofrs/uuid v4.4.0+incompatible
-	github.com/ralch/slogr v0.0.0-20230603105259-c1ec4ce15f56
+	github.com/ralch/slogr v0.0.0-20230603181503-a0b1581080e3
 	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 	google.golang.org/genproto/googleapis/api v0.0.0-20230530153820-e85fd2cbaebc
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230530153820-e85fd2cbaebc
