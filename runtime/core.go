@@ -21,5 +21,12 @@ var (
 	WithValidator = middleware.WithValidator
 )
 
+// TracePropagator implements propagation.TracePropagator to propagate
+// traces in HTTP headers for Google Cloud Platform and Stackdriver Trace.
+type TracePropagator = middleware.TracePropagator
+
+// NewTracePropagator creates a new propagator.
+var NewTracePropagator = middleware.NewTracePropagator
+
 // WithUnaryHandler represents an unary handler
 var WithUnaryHandler = middleware.WithUnaryHandler
