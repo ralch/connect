@@ -16,6 +16,8 @@ type HealthServiceController struct {
 func (x *HealthServiceController) Mount(r chi.Router) {
 	var interceptors []connect.Interceptor
 	// prepare the interceptors
+	interceptors = append(interceptors, middleware.WithTracer())
+	interceptors = append(interceptors, middleware.WithLogger())
 	interceptors = append(interceptors, middleware.WithValidator())
 
 	var options []connect.HandlerOption
