@@ -2,8 +2,10 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
-	"strings"
+	"net/url"
+	"time"
 
 	"github.com/bufbuild/connect-go"
 	"github.com/gofrs/uuid"
@@ -14,25 +16,35 @@ import (
 func WithLogger() *UnaryInterceptor {
 	handleFn := func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
-			w = &ResponseWriter{ResponseWriter: w}
-
 			ctx := r.Context()
+			start := time.Now()
 
+			ww := &ResponseWriter{ResponseWriter: w}
+			// prepare the logger
 			logger := slogr.FromContext(ctx)
-			// log the start
 			logger = logger.With(slogr.Request(r))
-			logger.InfoCtx(ctx, "request received")
 
 			// prepare the context
 			ctx = slogr.WithContext(ctx, logger)
+			// prepare the request
 			r = r.WithContext(ctx)
 
 			// execute the handler
-			next.ServeHTTP(w, r)
+			next.ServeHTTP(ww, r)
 
-			// log the end
-			logger = logger.With(slogr.ResponseWriter(w))
-			logger.InfoCtx(ctx, "request completed")
+			duration := time.Now().Sub(start)
+			// log the request end
+			logger = logger.With(slogr.ResponseWriter(ww, slogr.WithLatency(duration)))
+
+			status := ww.GetStatusCode()
+			switch {
+			case status < 400:
+				logger.InfoCtx(ctx, "")
+			case status < 500:
+				logger.WarnCtx(ctx, "")
+			default:
+				logger.ErrorCtx(ctx, "")
+			}
 		}
 
 		return http.HandlerFunc(fn)
@@ -44,32 +56,41 @@ func WithLogger() *UnaryInterceptor {
 			logger := slogr.FromContext(ctx)
 
 			var (
-				id        = uuid.Must(uuid.NewV4()).String()
-				procedure = strings.Trim(request.Spec().Procedure, "/")
+				id   = uuid.Must(uuid.NewV4()).String()
+				spec = request.Spec()
+				peer = request.Peer()
 			)
 
+			uri := &url.URL{
+				Scheme: peer.Protocol,
+				Host:   peer.Addr,
+				Path:   spec.Procedure,
+			}
+
+			message := fmt.Sprintf("[%v] %v", spec.StreamType, uri)
+
 			// log the start
-			logger.InfoCtx(ctx, "execution started",
-				slogr.OperationStart(id, procedure),
+			logger.InfoCtx(ctx, message,
+				slogr.OperationStart(id, spec.Procedure),
 			)
 
 			// prepare the context
 			ctx = slogr.WithContext(ctx, logger.With(
-				slogr.OperationContinue(id, procedure),
+				slogr.OperationContinue(id, spec.Procedure),
 			))
 
 			// execute the method
 			response, err := next(ctx, request)
-			if err != nil {
+			if err == nil {
 				// log the end
-				logger.ErrorCtx(ctx, "execution finished",
-					slogr.OperationEnd(id, procedure),
-					slogr.Error(err),
+				logger.InfoCtx(ctx, message,
+					slogr.OperationEnd(id, spec.Procedure),
 				)
 			} else {
 				// log the end
-				logger.InfoCtx(ctx, "execution finished",
-					slogr.OperationEnd(id, procedure),
+				logger.ErrorCtx(ctx, message,
+					slogr.OperationEnd(id, spec.Procedure),
+					slogr.Error(err),
 				)
 			}
 
@@ -87,6 +108,7 @@ func WithLogger() *UnaryInterceptor {
 
 var _ http.ResponseWriter = &ResponseWriter{}
 
+// ResponseWriter repersents a response writer.
 type ResponseWriter struct {
 	StatusCode     int32
 	ContentLength  int64

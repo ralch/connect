@@ -16,14 +16,13 @@ func WithRecover() connect.HandlerOption {
 
 	return connect.WithRecover(
 		func(ctx context.Context, _ connect.Spec, _ http.Header, r any) error {
-			key := slog.Group("error",
-				slog.Any("panic", r),
-			)
-			// log the stack trace
+			failure := fmt.Sprintf("%v", r)
+			// prepare the logger
 			logger := slogr.FromContext(ctx)
-			logger.With(key).Error(err.Error())
+			logger.ErrorCtx(ctx, "the system has an unexpected failure", slog.String("failure", failure))
+
 			// return the error
-			return connect.NewError(connect.CodeFailedPrecondition, err)
+			return connect.NewError(connect.CodeInternal, err)
 		},
 	)
 }

@@ -21,10 +21,10 @@ func (x *EventServiceController) Mount(r chi.Router) {
 	interceptors = append(interceptors, middleware.WithValidator())
 
 	var options []connect.HandlerOption
-	// prepare the options
-	options = append(options, middleware.WithRecover())
 	// prepare the options for interceptor collection
 	options = append(options, connect.WithInterceptors(interceptors...))
+	// prepare the options
+	options = append(options, middleware.WithRecover())
 
 	r.Group(func(r chi.Router) {
 		// mount the middleware
