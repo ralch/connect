@@ -65,6 +65,10 @@ type (
 	HealthCheckRequest = runtimev1.HealthCheckRequest
 	// HealthCheckResponse represents a response for connect.runtime.v1.HealthService.Check method.
 	HealthCheckResponse = runtimev1.HealthCheckResponse
+	// HealthWatchRequest represents a request for connect.runtime.v1.HealthService.Watch method.
+	HealthWatchRequest = runtimev1.HealthCheckRequest
+	// HealthWatchResponse represents a response for connect.runtime.v1.HealthService.Watch method.
+	HealthWatchResponse = runtimev1.HealthCheckResponse
 	// HealthServiceClient is a client for the connect.runtime.v1.HealthService service.
 	HealthServiceClient = runtimev1connect.HealthServiceClient
 	// HealthServiceHandler is an implementation of the connect.runtime.v1.HealthService service.
